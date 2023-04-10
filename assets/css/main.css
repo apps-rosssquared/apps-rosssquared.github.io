@@ -2604,6 +2604,7 @@ input, select, textarea {
 				margin: 0;
 				text-align: center;
 				width: 8em;
+				background-color: #fff;
 			}
 
 				ul.major-icons li .icon:before {
@@ -2613,6 +2614,30 @@ input, select, textarea {
 					transform: rotate(-45deg);
 					display: inline-block;
 					line-height: inherit;
+				}
+
+				ul.major-icons li .inner-icon-live {
+					-moz-transform: rotate(-45deg);
+					-webkit-transform: rotate(-45deg);
+					-ms-transform: rotate(-45deg);
+					transform: rotate(-45deg);
+					display: inline-block;
+					line-height: inherit;
+					font-size: 2rem;
+					font-weight: bold;
+					color:#005500
+				}
+
+				ul.major-icons li .inner-icon-dead {
+					-moz-transform: rotate(-45deg);
+					-webkit-transform: rotate(-45deg);
+					-ms-transform: rotate(-45deg);
+					transform: rotate(-45deg);
+					display: inline-block;
+					line-height: inherit;
+					font-size: 1rem;
+					font-weight: bold;
+					color:#005500
 				}
 
 /* Table */
