@@ -1,1 +1,1 @@
-Apps home page for Ross Squared applications/games etc.
+Apps home page for Ross Squared applications/games etcetera
