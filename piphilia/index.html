@@ -1,47 +1,23 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html>
   <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Piphilia - Coming Soon</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&amp;display=swap"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&amp;display=swap" media="print" onload="this.media='all'"/>
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&amp;display=swap"/>
-    </noscript>
-    <link href="css/bootstrap.min.css?ver=1.2.0" rel="stylesheet">
-    <link href="css/font-awesome/css/all.min.css?ver=1.2.0" rel="stylesheet">
-    <link href="css/main.css?ver=1.2.0" rel="stylesheet">
+    <title>Piphila</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js"></script>
   </head>
-  <body id="top"><div class="site-wrapper">
-  <div class="site-wrapper-inner">
-    <div class="cover-container">
-      <div class="masthead clearfix">
-        <div class="inner">
-          <h3 class="masthead-brand">Coming Soon</h3>
-          <nav class="nav nav-masthead">
-            <a class="nav-link nav-social" href="https://facebook.com/piphilia" title="Facebook" target="_blank"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
-            <a class="nav-link nav-social" href="https://twitter.com/piphilia314" title="Twitter" target="_blank"><i class="fab fa-twitter" aria-hidden="true"></i></a>
-            <a class="nav-link nav-social" href="https://www.youtube.com/@dalevross" title="Youtube" target="_blank"><i class="fab fa-youtube" aria-hidden="true"></i></a>
-            <a class="nav-link nav-social" href="https://instagram.com/piphilia314" title="Instagram" target="_blank"><i class="fab fa-instagram" aria-hidden="true"></i></a>
-          </nav>
-        </div>
-      </div>      
-      <div class="inner cover">
-        <h1 class="cover-heading">You will remember!</h1>
-        <p class="lead cover-copy">Hold tight as we work through our initial feature set and all the bugs that will ensue.</p>
-     </div>
-      <div class="mastfoot">
-        <div class="inner">
-          <p>&copy; Ross Squared. Design: <a href="https://templateflip.com/" target="_blank">TemplateFlip</a>.</p>
-        </div>
-      </div>
-  </div>
-</div>
-    <script src="scripts/jquery.slim.min.js?ver=1.2.0"></script>
-    <script src="scripts/bootstrap.bundle.min.js?ver=1.2.0"></script>
-    <script src="scripts/main.js?ver=1.2.0"></script>
+  <body>
+    <div id="game-container"></div>
+    <script>
+      // Create a new Pixi.js renderer
+        const app = new PIXI.Application({
+        width: 800,
+        height: 600,
+        backgroundColor: 0x1099bb
+        });
+
+        // Add the renderer to the HTML page
+        document.getElementById("game-container").appendChild(app.view);
+
+    </script>
   </body>
 </html>

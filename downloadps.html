@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Download Presidents</title>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <script>
+     const presidents = [
+"41_george_hw_bush",
+"42_bill_clinton",
+"43_george_w_bush",
+"44_barack_obama",];
+
+// Create a function to download an image file from a URL
+async function downloadImage(url, filename) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const urlObject = window.URL || window.webkitURL || window;
+  const imageUrl = urlObject.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = imageUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  urlObject.revokeObjectURL(imageUrl);
+}
+
+// Loop through the list of presidents and download their images
+for (let i = 0; i < presidents.length; i++) {
+  const president = presidents[i];
+  const url = `https://www.whitehouse.gov/wp-content/uploads/2021/01/${president}.jpg?w=100&h=100`;
+  const filename = `${president}.jpg`;
+  downloadImage(url, filename);
+}
+
+
+    </script>
+  </body>
+</html>
