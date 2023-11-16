@@ -501,15 +501,19 @@
           return;
         }
 
+        // Update the position of each row
         rowsArray.forEach((row) => {
           row.container.y += fallingSpeed;
         });
 
+        // Check if the top row has reached a certain threshold for adding a new row
         let topRow = rowsArray[rowsArray.length - 1];
-        if (topRow.container.y >= rowFallThreshold) {
+        if (topRow && topRow.container.y >= rowFallThreshold) {
           addFallingRow();
+          // rowFallThreshold += blockHeight; // Update the threshold for the next row
         }
 
+        // Check if the bottom row has reached the bottom of the screen
         let bottomRow = rowsArray[0];
         if (bottomRow.container.y + blockHeight >= app.screen.height) {
           gameOver = true;
