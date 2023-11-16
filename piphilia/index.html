@@ -319,9 +319,25 @@
             currentRowIndex,
             fullSequence
           );
+
           fallingRows.addChild(row.container);
           rowsArray.push(row);
           currentRowIndex++;
+
+          // Set the event listener for interaction
+          row.container.interactive = true;
+          row.container.buttonMode = true;
+          row.container.on("pointerdown", (event) => {
+            handleBlockClick(
+              event,
+              sequenceArray,
+              row,
+              fallingRows,
+              rowsArray,
+              addFallingRow,
+              sequence
+            );
+          });
         }
 
         // Start with the first row
@@ -482,49 +498,23 @@
         addFallingRow
       ) {
         if (gameOver) {
-          // Handle game over logic
-          // Display game over screen or message
           return;
         }
 
-        // Update the position of each falling row
         rowsArray.forEach((row) => {
           row.container.y += fallingSpeed;
         });
 
-        // Check if the bottom row (the last in the rowsArray) is interactive and handle clicks
-        let bottomRow = rowsArray[rowsArray.length - 1];
-        if (bottomRow) {
-          bottomRow.container.interactive = true;
-          bottomRow.container.buttonMode = true;
-          bottomRow.container.once("pointerdown", (event) => {
-            handleBlockClick(
-              event,
-              sequenceArray,
-              bottomRow,
-              fallingRows,
-              rowsArray,
-              addFallingRow,
-              sequence
-            );
-          });
-        }
-
-        // Check if the bottom row has reached a certain point to add a new row
-        if (
-          rowsArray.length > 0 &&
-          rowsArray[0].container.y >= app.screen.height
-        ) {
-          // If the row reaches the bottom of the screen, end the game
-          gameOver = true;
-          showGameOverScreen();
-          return;
-        } else if (bottomRow.container.y >= rowFallThreshold) {
-          // Add a new row if the current bottom row reaches a certain threshold
+        let topRow = rowsArray[rowsArray.length - 1];
+        if (topRow.container.y >= rowFallThreshold) {
           addFallingRow();
         }
 
-        // Additional logic for updating game elements (e.g., updating scores, timers)
+        let bottomRow = rowsArray[0];
+        if (bottomRow.container.y + blockHeight >= app.screen.height) {
+          gameOver = true;
+          showGameOverScreen();
+        }
       }
 
       function handleBlockClick(
