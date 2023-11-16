@@ -325,14 +325,21 @@
           //console.log(rowsArray.length);
           currentRowIndex++;
 
-          // Set the event listener for interaction
-          row.container.interactive = true;
-          row.container.buttonMode = true;
-          row.container.on("pointerdown", (event) => {
+          // Disable interaction for all rows
+          rowsArray.forEach((rowItem, index) => {
+            rowItem.container.interactive = false;
+            rowItem.container.buttonMode = false;
+          });
+
+          // Only the first row in the array (which is at the bottom visually) should be interactive
+          let bottomRow = rowsArray[0];
+          bottomRow.container.interactive = true;
+          bottomRow.container.buttonMode = true;
+          bottomRow.container.on("pointerdown", (event) => {
             handleBlockClick(
               event,
               sequenceArray,
-              row,
+              bottomRow,
               fallingRows,
               rowsArray,
               addFallingRow,
