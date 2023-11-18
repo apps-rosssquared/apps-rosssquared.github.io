@@ -320,6 +320,7 @@
             fullSequence
           );
 
+          removeEventListenersFromAllRows(rowsArray);
           fallingRows.addChild(row.container);
           rowsArray.push(row);
           //console.log(rowsArray.length);
@@ -411,6 +412,12 @@
         };
       }
 
+      function removeEventListenersFromAllRows(rowsArray) {
+        rowsArray.forEach((row) => {
+          row.container.off("pointerdown");
+        });
+      }
+
       function generateRandomElement(
         sequence,
         sequenceArray,
@@ -461,7 +468,7 @@
           image.width = blockWidth;
           image.height = blockHeight;
           block.addChild(image);
-          console.log(imageName);
+          //console.log(imageName);
         } else {
           // Create a regular block with white background
           const bg = new PIXI.Graphics();
@@ -519,8 +526,8 @@
         // Move the rows down
         rowsArray.forEach((row, index) => {
           //console.log(
-          //`Row ${index} y-position: ${row.container.y}, height: ${row.container.height} `
-          // );
+          // `Row ${index} y-position: ${row.container.y}, height: ${row.container.height} `
+          //);
           // Update the position of the row
           row.container.y += fallingSpeed;
         });
