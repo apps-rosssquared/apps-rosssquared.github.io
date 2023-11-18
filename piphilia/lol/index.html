@@ -562,8 +562,8 @@
           // Correct selection
           sequenceArray.shift(); // Remove the first element from the sequence array
           fallingRows.removeChild(clickedRow.container);
-          rowsArray.pop(); // Remove the clicked row from rowsArray
-
+          rowsArray.shift(); // Remove the clicked row from rowsArray
+          console.log(rowsArray);
           // Check if the game is completed
           if (sequenceArray.length === 0) {
             // Game completed, show win screen
