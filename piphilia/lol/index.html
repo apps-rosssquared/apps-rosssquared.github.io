@@ -534,6 +534,11 @@
 
         // Check for game over condition
         let bottomRow = rowsArray[0];
+        // console.log(
+        //   `Row ${0} y-position: ${bottomRow.container.y}, app.screen.height: ${
+        //     app.screen.height
+        //   } fallingRow y-position ${app.stage.y}`
+        // );
         if (bottomRow.container.y + blockHeight >= app.screen.height) {
           gameOver = true;
           showGameOverScreen();
