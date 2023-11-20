@@ -630,8 +630,9 @@
 
       function restartGame() {
         // Clear the stage and reset any necessary game state variables
+        rowsArray = [];
         app.stage.removeChildren();
-
+        gameOver = false;
         const chooseSequenceContainer = new PIXI.Container();
 
         // Create a label for the screen
@@ -645,7 +646,6 @@
         label.anchor.set(0.5, 0);
         label.position.set(app.screen.width / 2, 50);
 
-        gameOver = false;
         // Add the label to the container
         chooseSequenceContainer.addChild(label);
 
@@ -702,8 +702,7 @@
         });
 
         booksOfTheBibleButton.on("pointerdown", () => {
-          startG;
-          ame("books-of-the-bible");
+          startGame("books-of-the-bible");
         });
       }
 
