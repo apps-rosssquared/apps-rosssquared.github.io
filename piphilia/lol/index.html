@@ -24,14 +24,14 @@
     </div>
     <div id="game-container"></div>
     <script>
-      let fallingSpeed = 1;
-      let speedIncrement = 1;
+      let fallingSpeed = 1 / 5;
+      let speedIncrement = 1 / 5;
 
       document
         .getElementById("fallingSpeedSlider")
         .addEventListener("input", function () {
           const speed = parseInt(this.value, 10);
-          fallingSpeed = speed;
+          fallingSpeed = speed / 5;
           document.getElementById("fallingSpeedDisplay").innerText = speed;
         });
 
@@ -39,7 +39,7 @@
         .getElementById("speedIncrementSlider")
         .addEventListener("input", function () {
           const increment = parseInt(this.value, 10);
-          speedIncrement = increment;
+          speedIncrement = increment / 5;
           document.getElementById("speedIncrementDisplay").innerText =
             increment;
         });
@@ -238,8 +238,82 @@
       document.getElementById("game-container").appendChild(app.view);
 
       let gameOver = false;
+      let rowsArray = [];
+      let fallingRows = new PIXI.Container();
+
+      const chooseSequenceContainer = new PIXI.Container();
+
+      // Create a label for the screen
+      const labelStyle = new PIXI.TextStyle({
+        fontFamily: "Arial",
+        fontSize: 36,
+        fontWeight: "bold",
+        fill: "#ffffff",
+      });
+      const label = new PIXI.Text("Choose Sequence", labelStyle);
+      label.anchor.set(0.5, 0);
+      label.position.set(app.screen.width / 2, 50);
+
+      // Add the label to the container
+      chooseSequenceContainer.addChild(label);
+
+      // Create the sequence buttons
+      const piButton = createSequenceButton("PI", app.screen.width / 2, 150);
+      const presidentsButton = createSequenceButton(
+        "US Presidents",
+        app.screen.width / 2,
+        250
+      );
+      const greekAlphabetButton = createSequenceButton(
+        "Greek Alphabet",
+        app.screen.width / 2,
+        350
+      );
+      const englishAlphabetButton = createSequenceButton(
+        "English Alphabet for Toddlers",
+        app.screen.width / 2,
+        450
+      );
+      const booksOfTheBibleButton = createSequenceButton(
+        "Books of the Bible",
+        app.screen.width / 2,
+        550
+      );
+
+      // Add the buttons to the container
+      chooseSequenceContainer.addChild(
+        piButton,
+        presidentsButton,
+        greekAlphabetButton,
+        englishAlphabetButton,
+        booksOfTheBibleButton
+      );
+
+      // Add the container to the stage
+      app.stage.addChild(chooseSequenceContainer);
+
+      // Handle button clicks
+      piButton.on("pointerdown", () => {
+        startGame("pi");
+      });
+
+      presidentsButton.on("pointerdown", () => {
+        startGame("presidents");
+      });
+
+      greekAlphabetButton.on("pointerdown", () => {
+        startGame("greek-alphabet");
+      });
+
+      englishAlphabetButton.on("pointerdown", () => {
+        startGame("english-alphabet");
+      });
+
+      booksOfTheBibleButton.on("pointerdown", () => {
+        startGame("books-of-the-bible");
+      });
       // Create a new container for the Choose Sequence screen
-      restartGame();
+      //restartGame();
 
       // Helper function to create a button
       function createSequenceButton(text, x, y) {
@@ -275,7 +349,7 @@
       function startGame(sequence) {
         // Clear the stage and remove the choose sequence screen
         app.stage.removeChildren();
-
+        gameOver = false;
         let sequenceArray = [];
         let sequenceName = "";
         switch (sequence) {
@@ -306,11 +380,11 @@
         let upcomingElements = sequenceArray.slice();
 
         // Create the first falling row
-        const fallingRows = new PIXI.Container();
+        fallingRows = new PIXI.Container();
         gameContainer.addChild(fallingRows);
 
         let currentRowIndex = 0; // Keep track of the current row index
-        let rowsArray = []; // Array to store all falling rows
+        rowsArray = []; // Array to store all falling rows
 
         // Function to add a new falling row
         function addFallingRow() {
@@ -343,8 +417,6 @@
               event,
               sequenceArray,
               bottomRow,
-              fallingRows,
-              rowsArray,
               addFallingRow,
               sequence
             );
@@ -356,13 +428,7 @@
 
         // Game loop with logic to add new rows and check for interactions
         app.ticker.add(() => {
-          gameLoop(
-            fallingRows,
-            sequenceArray,
-            sequence,
-            rowsArray,
-            addFallingRow
-          );
+          gameLoop(fallingRows, sequenceArray, sequence, addFallingRow);
         });
       }
 
@@ -508,13 +574,7 @@
         return block;
       }
 
-      function gameLoop(
-        fallingRows,
-        sequenceArray,
-        sequence,
-        rowsArray,
-        addFallingRow
-      ) {
+      function gameLoop(fallingRows, sequenceArray, sequence, addFallingRow) {
         if (gameOver) {
           return;
         }
@@ -546,6 +606,11 @@
         // );
         if (bottomRow.container.y + blockHeight >= app.screen.height) {
           gameOver = true;
+          app.ticker.remove(gameLoop);
+          rowsArray.forEach((row) => {
+            row.container.off("pointerdown");
+          });
+          rowsArray = [];
           if (topRow) {
             let globalPosition = topRow.container.toGlobal(new PIXI.Point());
             console.log(
@@ -561,8 +626,6 @@
         event,
         sequenceArray,
         clickedRow,
-        fallingRows,
-        rowsArray,
         addFallingRow,
         sequence
       ) {
@@ -629,81 +692,11 @@
       }
 
       function restartGame() {
+        location.reload();
         // Clear the stage and reset any necessary game state variables
-        rowsArray = [];
+        /*rowsArray = [];
         app.stage.removeChildren();
-        gameOver = false;
-        const chooseSequenceContainer = new PIXI.Container();
-
-        // Create a label for the screen
-        const labelStyle = new PIXI.TextStyle({
-          fontFamily: "Arial",
-          fontSize: 36,
-          fontWeight: "bold",
-          fill: "#ffffff",
-        });
-        const label = new PIXI.Text("Choose Sequence", labelStyle);
-        label.anchor.set(0.5, 0);
-        label.position.set(app.screen.width / 2, 50);
-
-        // Add the label to the container
-        chooseSequenceContainer.addChild(label);
-
-        // Create the sequence buttons
-        const piButton = createSequenceButton("PI", app.screen.width / 2, 150);
-        const presidentsButton = createSequenceButton(
-          "US Presidents",
-          app.screen.width / 2,
-          250
-        );
-        const greekAlphabetButton = createSequenceButton(
-          "Greek Alphabet",
-          app.screen.width / 2,
-          350
-        );
-        const englishAlphabetButton = createSequenceButton(
-          "English Alphabet for Toddlers",
-          app.screen.width / 2,
-          450
-        );
-        const booksOfTheBibleButton = createSequenceButton(
-          "Books of the Bible",
-          app.screen.width / 2,
-          550
-        );
-
-        // Add the buttons to the container
-        chooseSequenceContainer.addChild(
-          piButton,
-          presidentsButton,
-          greekAlphabetButton,
-          englishAlphabetButton,
-          booksOfTheBibleButton
-        );
-
-        // Add the container to the stage
-        app.stage.addChild(chooseSequenceContainer);
-
-        // Handle button clicks
-        piButton.on("pointerdown", () => {
-          startGame("pi");
-        });
-
-        presidentsButton.on("pointerdown", () => {
-          startGame("presidents");
-        });
-
-        greekAlphabetButton.on("pointerdown", () => {
-          startGame("greek-alphabet");
-        });
-
-        englishAlphabetButton.on("pointerdown", () => {
-          startGame("english-alphabet");
-        });
-
-        booksOfTheBibleButton.on("pointerdown", () => {
-          startGame("books-of-the-bible");
-        });
+        */
       }
 
       function showWinScreen() {
