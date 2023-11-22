@@ -240,6 +240,7 @@
       let gameOver = false;
       let rowsArray = [];
       let fallingRows = new PIXI.Container();
+      let fullSequence = [];
 
       const chooseSequenceContainer = new PIXI.Container();
 
@@ -376,7 +377,7 @@
         }
 
         const gameContainer = setupGameContainer(sequenceName);
-        let fullSequence = sequenceArray.slice();
+        fullSequence = sequenceArray.slice();
         let upcomingElements = sequenceArray.slice();
 
         // Create the first falling row
@@ -392,7 +393,6 @@
             sequence,
             sequenceArray,
             currentRowIndex,
-            fullSequence,
             upcomingElements
           );
 
@@ -416,6 +416,7 @@
             handleBlockClick(
               event,
               sequenceArray,
+              sequenceName,
               bottomRow,
               addFallingRow,
               sequence
@@ -428,7 +429,13 @@
 
         // Game loop with logic to add new rows and check for interactions
         app.ticker.add(() => {
-          gameLoop(fallingRows, sequenceArray, sequence, addFallingRow);
+          gameLoop(
+            fallingRows,
+            sequenceArray,
+            sequence,
+            sequenceName,
+            addFallingRow
+          );
         });
       }
 
@@ -443,7 +450,6 @@
         sequence,
         sequenceArray,
         rowIndex,
-        fullSequence,
         upcomingElements
       ) {
         const rowContainer = new PIXI.Container();
@@ -459,22 +465,16 @@
             tileValue = generateRandomElement(
               sequence,
               sequenceArray,
-              usedElements,
-              fullSequence
+              usedElements
             );
             usedElements.push(tileValue);
           }
 
-          const block = createBlock(
-            tileValue,
-            i * blockWidth,
-            rowIndex * blockHeight,
-            sequence
-          );
+          const block = createBlock(tileValue, i * blockWidth, 0, sequence);
           rowContainer.addChild(block);
         }
 
-        rowContainer.y = -blockHeight;
+        rowContainer.y = 0;
         upcomingElements.shift();
 
         return {
@@ -489,12 +489,7 @@
         });
       }
 
-      function generateRandomElement(
-        sequence,
-        sequenceArray,
-        usedElements,
-        fullSequence
-      ) {
+      function generateRandomElement(sequence, sequenceArray, usedElements) {
         let randomElement;
 
         if (sequence === "pi") {
@@ -574,7 +569,13 @@
         return block;
       }
 
-      function gameLoop(fallingRows, sequenceArray, sequence, addFallingRow) {
+      function gameLoop(
+        fallingRows,
+        sequenceArray,
+        sequence,
+        sequenceName,
+        addFallingRow
+      ) {
         if (gameOver) {
           return;
         }
@@ -582,7 +583,10 @@
         // Always add a new row when the last row reaches a certain position
         let topRow = rowsArray[rowsArray.length - 1];
 
-        if (!topRow || topRow.container.y >= blockHeight) {
+        if (
+          (!topRow || topRow.container.y >= blockHeight) &&
+          sequenceArray.length > 0
+        ) {
           // Adjust this value as needed
           addFallingRow();
         }
@@ -604,27 +608,32 @@
         //     app.screen.height
         //   } fallingRow y-position ${app.stage.y}`
         // );
-        if (bottomRow.container.y + blockHeight >= app.screen.height) {
-          gameOver = true;
-          app.ticker.remove(gameLoop);
-          rowsArray.forEach((row) => {
-            row.container.off("pointerdown");
-          });
-          rowsArray = [];
-          if (topRow) {
-            let globalPosition = topRow.container.toGlobal(new PIXI.Point());
-            console.log(
-              `Top Row Global Position: x=${globalPosition.x}, y=${globalPosition.y}`
-            );
+        if (bottomRow) {
+          if (bottomRow.container.y + blockHeight >= app.screen.height) {
+            gameOver = true;
+            app.ticker.remove(gameLoop);
+            rowsArray.forEach((row) => {
+              row.container.off("pointerdown");
+            });
+            rowsArray = [];
+            if (topRow) {
+              let globalPosition = topRow.container.children[0].toGlobal(
+                new PIXI.Point()
+              );
+              console.log(
+                `Top Row Global Position: x=${globalPosition.x}, y=${globalPosition.y}`
+              );
+            }
+            let elementNumber = fullSequence.length - sequenceArray.length;
+            showGameOverScreen(elementNumber, sequenceName);
           }
-          //console.log(bottomRow);
-          showGameOverScreen();
         }
       }
 
       function handleBlockClick(
         event,
         sequenceArray,
+        sequenceName,
         clickedRow,
         addFallingRow,
         sequence
@@ -641,11 +650,38 @@
           sequenceArray.shift(); // Remove the first element from the sequence array
           fallingRows.removeChild(clickedRow.container);
           rowsArray.shift(); // Remove the clicked row from rowsArray
-          //console.log(rowsArray);
+
+          if (rowsArray.length > 0) {
+            removeEventListenersFromAllRows(rowsArray);
+
+            // Disable interaction for all rows
+            rowsArray.forEach((rowItem, index) => {
+              rowItem.container.eventMode = "auto";
+              rowItem.container.buttonMode = false;
+            });
+
+            // Only the first row in the array (which is at the bottom visually) should be interactive
+            let bottomRow = rowsArray[0];
+            bottomRow.container.eventMode = "static";
+            bottomRow.container.buttonMode = true;
+            bottomRow.container.on("pointerdown", (newEvent) => {
+              handleBlockClick(
+                newEvent,
+                sequenceArray,
+                sequenceName,
+                bottomRow,
+                addFallingRow,
+                sequence
+              );
+            });
+          }
+
           // Check if the game is completed
           if (sequenceArray.length === 0) {
             // Game completed, show win screen
-            showWinScreen();
+            let elementNumber = fullSequence.length - sequenceArray.length;
+            app.ticker.remove(gameLoop);
+            showWinScreen(elementNumber, sequenceName);
           } else {
             // Add a new row for the next sequence element
             //addFallingRow();
@@ -653,16 +689,27 @@
         } else {
           // Incorrect selection
           // Implement logic for incorrect selection, like speeding up the falling rows
-          handleIncorrectSelection(clickedBlock, fallingRows, rowsArray);
-          console.log("increased speed");
+          handleIncorrectSelection(clickedBlock, sequence);
         }
       }
 
-      function handleIncorrectSelection(clickedBlock, fallingRows, rowsArray) {
-        // Logic for handling incorrect selection
-        // For example, you might increase the speed of falling rows, show a warning, etc.
-        // clickedBlock can be highlighted or marked in some way
-        clickedBlock.tint = 0xff0000; // Example: tint the block red to indicate it's incorrect
+      function handleIncorrectSelection(clickedBlock, sequence) {
+        // Check if it's a president block
+        if (sequence === "presidents") {
+          // Assuming the sprite is the first child of the clicked block
+          let sprite = clickedBlock.children.find(
+            (child) => child instanceof PIXI.Sprite
+          );
+          if (sprite) {
+            sprite.tint = 0xff0000; // Apply tint to the sprite
+          }
+        } else {
+          // For non-president blocks (graphics)
+          let graphics = clickedBlock.getChildAt(0); // Assuming the first child is the graphics
+          if (graphics instanceof PIXI.Graphics) {
+            graphics.tint = 0xff0000;
+          }
+        }
         increaseFallingSpeed();
       }
 
@@ -699,7 +746,7 @@
         */
       }
 
-      function showWinScreen() {
+      function showWinScreen(elementNumber, sequenceName) {
         // Create a semi-transparent overlay
         const overlay = new PIXI.Graphics();
         overlay.beginFill(0x000000, 0.5);
@@ -722,9 +769,12 @@
 
         const restartButton = createRestartButton();
         app.stage.addChild(restartButton);
+
+        const shareButton = setupShareButton(elementNumber, sequenceName);
+        app.stage.addChild(shareButton);
       }
 
-      function showGameOverScreen() {
+      function showGameOverScreen(elementNumber, sequenceName) {
         // Create a semi-transparent overlay
         const overlay = new PIXI.Graphics();
         overlay.beginFill(0x000000, 0.5);
@@ -747,9 +797,61 @@
 
         const restartButton = createRestartButton();
         app.stage.addChild(restartButton);
+
+        const shareButton = setupShareButton(elementNumber, sequenceName);
+        app.stage.addChild(shareButton);
       }
 
-      // Additional functions for creating blocks, handling user interactions, etc.
+      function setupShareButton(elementNumber, sequenceName) {
+        const ofTotal = sequenceName == "Pi" ? "" : `of ${fullSequence.length}`;
+        let shareText = "";
+        if (elementNumber < fullSequence.length) {
+          shareText = `I reached element number ${elementNumber} ${ofTotal} in the ${sequenceName} sequence. Play here: https://apps.rosssquared.org/piphilia/`;
+        } else {
+          shareText = `I completed the ${sequenceName} sequence. Play here: https://apps.rosssquared.org/piphilia/`;
+        }
+        const shareButton = new PIXI.Text("Share", {
+          fontFamily: "Arial",
+          fontSize: 24,
+          fill: "#ffffff",
+        });
+        shareButton.anchor.set(0.5);
+        shareButton.x = app.screen.width / 2; // Center horizontally
+        shareButton.y = app.screen.height / 2 + 100; // Position below the game over or win message
+        shareButton.interactive = true;
+        shareButton.buttonMode = true;
+        shareButton.on("pointerdown", () => {
+          if (navigator.share) {
+            // Try using the Share API
+            navigator
+              .share({
+                title: "My Game Achievement",
+                text: shareText,
+              })
+              .then(() => {
+                console.log("Thanks for sharing!");
+              })
+              .catch((error) => {
+                // If Share API fails, copy text to clipboard
+                copyTextToClipboard(shareText);
+              });
+          } else {
+            // If Share API is not available, copy text to clipboard
+            copyTextToClipboard(shareText);
+          }
+        });
+
+        return shareButton;
+      }
+
+      function copyTextToClipboard(text) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            alert("Text copied to clipboard!");
+          })
+          .catch(console.error);
+      }
     </script>
   </body>
 </html>
