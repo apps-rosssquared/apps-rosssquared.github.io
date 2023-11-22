@@ -244,6 +244,9 @@
 
       const chooseSequenceContainer = new PIXI.Container();
 
+      const helpButton = createHelpButton();
+      chooseSequenceContainer.addChild(helpButton);
+
       // Create a label for the screen
       const labelStyle = new PIXI.TextStyle({
         fontFamily: "Arial",
@@ -852,6 +855,48 @@
           })
           .catch(console.error);
       }
+
+      function createHelpButton() {
+        const button = new PIXI.Container();
+
+        // Set up the graphics and text style as in your other buttons
+        const background = new PIXI.Graphics();
+        background.beginFill(0x000000, 0.7);
+        background.drawRoundedRect(-50, -25, 100, 50, 10); // Adjust size if needed
+        button.addChild(background);
+
+        const textStyle = new PIXI.TextStyle({
+          fontFamily: "Arial",
+          fontSize: 24,
+          fontWeight: "bold",
+          fill: "#ffffff",
+        });
+        const buttonText = new PIXI.Text("Help", textStyle);
+        buttonText.anchor.set(0.5);
+        button.addChild(buttonText);
+
+        // Position the button in the top right corner
+        const marginRight = 0; // Adjust as needed
+        const marginTop = 20; // Adjust as needed
+        button.position.set(
+          app.screen.width - marginRight - background.width / 2,
+          marginTop
+        );
+
+        // Interaction setup
+        button.interactive = true;
+        button.buttonMode = true;
+        button.on("pointerdown", showHelp);
+
+        return button;
+      }
+
+      function showHelp() {
+        // Logic to display help instructions
+        location.href = "/help.html";
+      }
+
+      // ... rest of the code
     </script>
   </body>
 </html>
