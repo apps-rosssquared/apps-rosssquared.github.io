@@ -734,8 +734,12 @@
           // Check if the game is completed
           if (sequenceArray.length === 0) {
             // Game completed, show win screen
+
             let elementNumber = fullSequence.length - sequenceArray.length;
             app.ticker.remove(gameLoop);
+            //Remove any remaining blocks from the screen
+            fallingRows.removeChildren();
+            rowsArray = [];
             showWinScreen(elementNumber, sequenceName);
           } else {
             // Add a new row for the next sequence element
