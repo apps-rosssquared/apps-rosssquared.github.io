@@ -917,7 +917,7 @@
         navigator.clipboard
           .writeText(text)
           .then(() => {
-            alert("Text copied to clipboard!");
+            console.log("Text copied to clipboard!");
           })
           .catch(console.error);
       }
