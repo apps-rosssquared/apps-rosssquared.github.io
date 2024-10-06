@@ -791,7 +791,7 @@
         restartButton.anchor.set(0.5);
         restartButton.position.set(
           app.screen.width / 2,
-          app.screen.height / 2 + 60
+          app.screen.height / 2 + 100
         );
         restartButton.on("pointerdown", restartGame);
         return restartButton;
@@ -826,6 +826,26 @@
         message.position.set(app.screen.width / 2, app.screen.height / 2);
         app.stage.addChild(message);
 
+
+        
+        const endMessageText = `You completed the ${sequenceName} sequence in ${convertTimeHMS(
+            timeOfLastClick
+          )}.`;
+
+        const endMessage = new PIXI.Text(
+          endMessageText,
+          new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 20,
+            fill: "#ffffff",
+          })
+        );
+        
+        endMessage.anchor.set(0.5);
+        endMessage.position.set(app.screen.width / 2, app.screen.height / 2 + 60);
+
+        app.stage.addChild(endMessage);
+
         const restartButton = createRestartButton();
         app.stage.addChild(restartButton);
 
@@ -854,6 +874,26 @@
         message.anchor.set(0.5);
         message.position.set(app.screen.width / 2, app.screen.height / 2);
         app.stage.addChild(message);
+        
+        const ofTotal = sequenceName == "Pi" ? "" : `of ${fullSequence.length}`;
+        
+        const endMessageText = `You reached element number ${elementNumber} ${ofTotal} in the ${sequenceName} sequence in ${convertTimeHMS(
+            timeOfLastClick
+          )}.`;
+
+        const endMessage = new PIXI.Text(
+          endMessageText,
+          new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 20,
+            fill: "#ffffff",
+          })
+        );
+        
+        endMessage.anchor.set(0.5);
+        endMessage.position.set(app.screen.width / 2, app.screen.height / 2 + 60);
+
+        app.stage.addChild(endMessage);
 
         const restartButton = createRestartButton();
         app.stage.addChild(restartButton);
@@ -884,7 +924,7 @@
         });
         shareButton.anchor.set(0.5);
         shareButton.x = app.screen.width / 2; // Center horizontally
-        shareButton.y = app.screen.height / 2 + 100; // Position below the game over or win message
+        shareButton.y = app.screen.height / 2 + 140; // Position below the game over or win message
         shareButton.eventMode = "static";
         shareButton.buttonMode = true;
           shareButton.on("pointerdown", () => {
